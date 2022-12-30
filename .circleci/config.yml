@@ -37,10 +37,13 @@ jobs:
 
   make-image:
     docker:
-      - image: docker:latest
+      - image: docker:git
+
+    working_directory: ~/repo
 
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: install OS dependencies
           command: |
