@@ -58,4 +58,4 @@ workflows:
     jobs:
       - test-app
       - make-image
-        requires: [test-app]
+          requires: [test-app]
