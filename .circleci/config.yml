@@ -37,9 +37,7 @@ jobs:
 
   make-image:
     docker:
-      - image: docker
-
-    working_directory: ~/repo
+      - image: docker:latest
 
     steps:
       - checkout
@@ -58,4 +56,4 @@ workflows:
     jobs:
       - test-app
       - make-image:
-        requires: [test-app]
+          requires: [test-app]
