@@ -57,5 +57,5 @@ workflows:
   default:
     jobs:
       - test-app
-      - make-image
-          requires: [test-app]
+      - make-image:
+        requires: [test-app]
