@@ -121,7 +121,7 @@ jobs:
           command: |
             echo "Kubernetes nodes:"
             kubectl get nodes
-            kubectl set image deployment/longnv43-capstone longnv43-capstone=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
+            kubectl set image deployment/longnv43-capstone nvlong17=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
             kubectl get deploy,rs,svc,pods
             if [[ << parameters.env-name >> == 'green' ]]; then
               kubectl port-forward << pipeline.parameters.green-k8s-pod-name >> 8000:80
