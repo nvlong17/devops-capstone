@@ -75,6 +75,8 @@ jobs:
     docker:
       - image: amazon/aws-cli
 
+    working_directory: ~/repo
+
     steps:
       - run:
           name: Install OS dependencies
@@ -90,8 +92,11 @@ jobs:
       - run:
           name: Install eksctl
           command: |
-            curl --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf
-            sudo mv ./eksctl /usr/local/bin
+            mkdir temp
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C ./temp
+            [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
+            $SUDO chmod +x ./temp/eksctl
+            $SUDO mv ./temp/eksctl /usr/local/bin
             eksctl --version
       - run:
           name: Configure private AWS ECR
