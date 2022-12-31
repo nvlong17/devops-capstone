@@ -89,9 +89,6 @@ jobs:
             [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
             $SUDO chmod +x ./kubectl
             $SUDO mv ./kubectl /usr/local/bin
-            mkdir -p $HOME/.kube
-            $SUDO cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-            $SUDO chown $(id -u):$(id -g) $HOME/.kube/config
       - run:
           name: Install eksctl
           command: |
@@ -101,17 +98,17 @@ jobs:
             $SUDO chmod +x ./temp/eksctl
             $SUDO mv ./temp/eksctl /usr/local/bin
             eksctl version
-      - run:
-          name: Configure private AWS ECR
-          command: |
-            NAMESPACE_NAME="<< parameters.env-name >>-deploy" && \
-            kubectl create namespace $NAMESPACE_NAME || true && \
-            kubectl create secret docker-registry regcred \
-              --docker-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com \
-              --docker-username=AWS \
-              --docker-password=$(aws ecr get-login-password) \
-              --namespace=$NAMESPACE_NAME || true && \
-            kubectl apply -f manifest-deployment.yml
+      # - run:
+      #     name: Configure private AWS ECR
+      #     command: |
+      #       NAMESPACE_NAME="<< parameters.env-name >>-deploy" && \
+      #       kubectl create namespace $NAMESPACE_NAME || true && \
+      #       kubectl create secret docker-registry regcred \
+      #         --docker-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com \
+      #         --docker-username=AWS \
+      #         --docker-password=$(aws ecr get-login-password) \
+      #         --namespace=$NAMESPACE_NAME || true && \
+      #       kubectl apply -f manifest-deployment.yml
       - run:
           name: Get k8s cluster
           command: |
