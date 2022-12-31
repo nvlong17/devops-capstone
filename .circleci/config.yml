@@ -89,6 +89,9 @@ jobs:
             [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
             $SUDO chmod +x ./kubectl
             $SUDO mv ./kubectl /usr/local/bin
+            mkdir -p $HOME/.kube
+            $SUDO cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            $SUDO chown $(id -u):$(id -g) $HOME/.kube/config
       - run:
           name: Install eksctl
           command: |
