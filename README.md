@@ -48,7 +48,7 @@ eksctl create cluster \
     --name longnv43-capstone \
     --version 1.24 \
     --nodegroup-name standard-workers \
-    --node-type t3.micro \
+    --node-type t3.medium \
     --nodes 1 \
     --nodes-min 1 \
     --nodes-max 2 \

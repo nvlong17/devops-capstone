@@ -98,17 +98,6 @@ jobs:
             $SUDO chmod +x ./temp/eksctl
             $SUDO mv ./temp/eksctl /usr/local/bin
             eksctl version
-      # - run:
-      #     name: Configure private AWS ECR
-      #     command: |
-      #       NAMESPACE_NAME="<< parameters.env-name >>-deploy" && \
-      #       kubectl create namespace $NAMESPACE_NAME || true && \
-      #       kubectl create secret docker-registry regcred \
-      #         --docker-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com \
-      #         --docker-username=AWS \
-      #         --docker-password=$(aws ecr get-login-password) \
-      #         --namespace=$NAMESPACE_NAME || true && \
-      #       kubectl apply -f manifest-deployment.yml
       - run:
           name: Get k8s cluster
           command: |
@@ -128,7 +117,7 @@ jobs:
             kubectl get nodes
             kubectl create deploy longnv43-capstone --image=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
             kubectl get deploy,rs,svc,pods
-            kubectl port-forward longnv43-capstone 8000:80
+            # kubectl port-forward longnv43-capstone 8000:80
 
 workflows:
   default:
