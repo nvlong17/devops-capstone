@@ -1,4 +1,9 @@
 version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@8.2.1
+  aws-ecs: circleci/aws-ecs@3.2.0 
+
 jobs:
   test-app:
     docker:
@@ -60,3 +65,10 @@ workflows:
       - test-app
       - make-image:
           requires: [test-app]
+      - aws-ecr/build_and_push_image:
+          region: ${AWS_DEFAULT_REGION}
+          account-url: ${AWS_ECR_ACCOUNT_URL}
+          repo: udacity-capstone
+          tag: ${CIRCLE_BUILD_NUM}
+          requires:
+            - make-image
