@@ -55,14 +55,9 @@ jobs:
             apk update
             apk add bash
       - run:
-          name: Build Docker image
+          name: Test Docker image build
           command: |
             ./run_docker.sh
-      - aws-ecr/push-image:
-          region: ${AWS_DEFAULT_REGION}
-          repo: nvlong17
-          tag: udacity-capstone
-
 
 workflows:
   default:
@@ -70,9 +65,9 @@ workflows:
       - test-app
       - make-image:
           requires: [test-app]
-      # - aws-ecr/build-and-push-image:
-      #     region: ${AWS_DEFAULT_REGION}
-      #     repo: nvlong17
-      #     tag: udacity-capstone
-      #     requires:
-      #       - make-image
+      - aws-ecr/build-and-push-image:
+          region: ${AWS_DEFAULT_REGION}
+          repo: nvlong17
+          tag: udacity-capstone
+          requires:
+            - make-image

@@ -9,10 +9,10 @@
     Pick a deployment type - either rolling deployment or blue/green deployment.
     For the Docker application you can either use an application which you come up with, or use an open-source application pulled from the Internet, or if you have no idea, you can use an Nginx “Hello World, my name is (student name)” application.
 
-[x] Docker application: Flask app at `app.py`
-[x] Blue/Green Deployment type
-[x] Continuous Integration using Circle CI
-[x] Plan what the pipeline will look like
+- [x] Docker application: Flask app at `app.py`
+- [x] Blue/Green Deployment type
+- [x] Continuous Integration using Circle CI
+- [x] Plan what the pipeline will look like
 
 Pipeline steps:
 - Install dependencies
@@ -25,18 +25,40 @@ Pipeline steps:
     Set up your CircleCI account and connect your git repository.
     Set up your environment to which you will deploy code.
 
-[x] Git repository connected to CircleCI
-[] Setup environment variables for CircleCI
+- [x] Git repository connected to CircleCI
+- [x] Setup environment variables for CircleCI:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - AWS_ACCOUNT_ID
+    - AWS_DEFAULT_REGION
+    - AWS_ECR_REGISTRY_ID
 
 ### Step 3: Pick AWS Kubernetes as a Service, or build your own Kubernetes cluster.
     Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
     It should create the EC2 instances (if you are building your own), set the correct networking settings, and deploy software to these instances.
     As a final step, the Kubernetes cluster will need to be initialized. The Kubernetes cluster initialization can either be done by hand, or with Ansible/Cloudformation at the student’s discretion.
 
+- [] Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
+- [] It should create the EC2 instances (if you are building your own), set the correct networking settings, and deploy software to these instances.
+- [] As a final step, the Kubernetes cluster will need to be initialized. The Kubernetes cluster initialization can either be done by hand, or with Ansible/Cloudformation at the student’s discretion.
+
 ### Step 4: Build your pipeline
-    Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
-    It should create the EC2 instances (if you are building your own), set the correct networking settings, and deploy software to these instances.
-    As a final step, the Kubernetes cluster will need to be initialized. The Kubernetes cluster initialization can either be done by hand, or with Ansible/Cloudformation at the student’s discretion.
+    Construct your pipeline in your GitHub repository.
+    Set up all the steps that your pipeline will include.
+    Configure a deployment pipeline.
+    Include your Dockerfile/source code in the Git repository.
+    Include with your Linting step both a failed Linting screenshot and a successful Linting screenshot to show the Linter working properly.
+
+- [x] Pipeline in [GitHub repository](https://github.com/nvlong17/devops-capstone)
+- [x] Set up all the steps that your pipeline will include.
+- [x] Deployment pipeline at [CircleCI Config](.circleci/config.yml)
+- [x] Include your Dockerfile/source code in the Git repository.
+- [x] Include with your Linting step both a failed Linting screenshot and a successful Linting screenshot to show the Linter working properly.
+
+Failed lint
+![lint failed](screenshot/lint_fail.png)
+Passed lint
+![lint failed](screenshot/lint_pass.png)
 
 ### Step 5: Test your pipeline
     Perform builds on your pipeline.
