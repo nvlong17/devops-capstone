@@ -11,6 +11,12 @@ parameters:
   blue-k8s-cluster-name:
     type: string
     default: "longnv43-capstone-blue"
+  blue-k8s-pod-name:
+    type: string
+    default: longnv43-capstone-7b78f46ff7-k9mrc
+  green-k8s-pod-name:
+    type: string
+    default: longnv43-capstone-7b78f46ff7-8jmjx
 
 jobs:
   test-app:
@@ -117,7 +123,11 @@ jobs:
             kubectl get nodes
             kubectl create deploy longnv43-capstone --image=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
             kubectl get deploy,rs,svc,pods
-            # kubectl port-forward longnv43-capstone 8000:80
+            if [[ << parameters.env-name >> == 'green' ]]; then
+              kubectl port-forward << pipeline.parameters.green-k8s-pod-name >> 8000:80
+            else
+              kubectl port-forward << pipeline.parameters.blue-k8s-pod-name >> 8000:80
+            fi
 
 workflows:
   default:
