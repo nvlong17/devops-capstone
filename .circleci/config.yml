@@ -97,7 +97,7 @@ jobs:
             [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
             $SUDO chmod +x ./temp/eksctl
             $SUDO mv ./temp/eksctl /usr/local/bin
-            eksctl --version
+            eksctl version
       - run:
           name: Configure private AWS ECR
           command: |
@@ -129,8 +129,6 @@ jobs:
             kubectl create deploy longnv43-capstone --image=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
             kubectl get deploy,rs,svc,pods
             kubectl port-forward longnv43-capstone 8000:80
-      - destroy-environment:
-          env-name: << parameters.env-name >>
 
 workflows:
   default:
