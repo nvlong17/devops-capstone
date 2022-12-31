@@ -32,15 +32,31 @@ Pipeline steps:
     - AWS_ACCOUNT_ID
     - AWS_DEFAULT_REGION
     - AWS_ECR_REGISTRY_ID
+    - ECR_REPO_NAME
+    - ECR_IMAGE_TAG
 
 ### Step 3: Pick AWS Kubernetes as a Service, or build your own Kubernetes cluster.
     Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
     It should create the EC2 instances (if you are building your own), set the correct networking settings, and deploy software to these instances.
     As a final step, the Kubernetes cluster will need to be initialized. The Kubernetes cluster initialization can either be done by hand, or with Ansible/Cloudformation at the student’s discretion.
 
-- [] Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
-- [] It should create the EC2 instances (if you are building your own), set the correct networking settings, and deploy software to these instances.
-- [] As a final step, the Kubernetes cluster will need to be initialized. The Kubernetes cluster initialization can either be done by hand, or with Ansible/Cloudformation at the student’s discretion.
+- [x] Use AWS Elastic Kubernetes Service (EKS) for provisioning a Kubernetes cluster.
+
+Used `eksctl` with the following command to deploy 2 EKS clusters (replace `--name` for green/blue deployment):
+```
+eksctl create cluster \
+    --name longnv43-capstone \
+    --version 1.24 \
+    --nodegroup-name standard-workers \
+    --node-type t3.micro \
+    --nodes 1 \
+    --nodes-min 1 \
+    --nodes-max 2 \
+    --region ap-southeast-1 \
+    --zones ap-southeast-1a \
+    --zones ap-southeast-1b \
+    --zones ap-southeast-1c
+```
 
 ### Step 4: Build your pipeline
     Construct your pipeline in your GitHub repository.

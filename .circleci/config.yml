@@ -4,6 +4,14 @@ orbs:
   aws-ecr: circleci/aws-ecr@8.2.1
   aws-ecs: circleci/aws-ecs@3.2.0 
 
+parameters:
+  green-k8s-cluster-name:
+    type: string
+    default: "longnv43-capstone"
+  blue-k8s-cluster-name:
+    type: string
+    default: "longnv43-capstone-blue"
+
 jobs:
   test-app:
     docker:
@@ -22,7 +30,7 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
@@ -35,7 +43,7 @@ jobs:
 
       # run lint!
       - run:
-          name: run lint
+          name: Run lint
           command: |
             . venv/bin/activate
             make lint           
@@ -50,7 +58,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: install OS dependencies
+          name: Install OS dependencies
           command: |
             apk update
             apk add bash
@@ -58,6 +66,63 @@ jobs:
           name: Test Docker image build
           command: |
             ./run_docker.sh
+
+  deploy:
+    parameters:
+      env-name:
+        type: string
+        default: "blue"
+    docker:
+      - image: amazon/aws-cli
+
+    steps:
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            [ -w /usr/local/bin ] && SUDO="" || SUDO=sudo
+            $SUDO chmod +x ./kubectl
+            $SUDO mv ./kubectl /usr/local/bin
+      - run:
+          name: Install eksctl
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl --version
+      - run:
+          name: Configure private AWS ECR
+          command: |
+            NAMESPACE_NAME="<< parameters.env-name >>-deploy" && \
+            kubectl create namespace $NAMESPACE_NAME || true && \
+            kubectl create secret docker-registry regcred \
+              --docker-server=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com \
+              --docker-username=AWS \
+              --docker-password=$(aws ecr get-login-password) \
+              --namespace=$NAMESPACE_NAME || true && \
+            kubectl apply -f manifest-deployment.yml
+      - run:
+          name: Get k8s cluster
+          command: |
+            echo "<< pipeline.parameters.<< parameters.env-name >>-k8s-cluster-name >>"
+            if [[ << parameters.env-name >> == 'green' ]]; then
+              aws eks update-kubeconfig \
+              --region ${AWS_DEFAULT_REGION} \
+              --name << pipeline.parameters.green-k8s-cluster-name >>
+            else
+              aws eks update-kubeconfig \
+              --region ${AWS_DEFAULT_REGION} \
+              --name << pipeline.parameters.blue-k8s-cluster-name >>
+            fi
+      - run:
+          name: Deploy application to EKS cluster
+          command: |
+            echo "Kubernetes nodes:"
+            kubectl get nodes
+            kubectl create deploy longnv43-capstone --image=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
+            kubectl get deploy,rs,svc,pods
+            kubectl port-forward longnv43-capstone 8000:80
+      - destroy-environment:
+          cluster-name: 
 
 workflows:
   default:
@@ -67,7 +132,29 @@ workflows:
           requires: [test-app]
       - aws-ecr/build-and-push-image:
           region: ${AWS_DEFAULT_REGION}
-          repo: nvlong17
-          tag: udacity-capstone
+          repo: ${ECR_REPO_NAME}
+          tag: ${ECR_IMAGE_TAG}
           requires:
             - make-image
+      - deploy:
+          requires: [aws-ecr/build-and-push-image]
+      - request-testing:
+          type: approval
+          requires:
+            - deploy
+      - deploy:
+          requires: [request-testing]
+
+commands:
+  destroy-environment:
+    description: Destroy environment with given name
+    parameters:
+      cluster-name:
+        type: string
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            echo "Destroying EKS cluster: << parameters.cluster-name >> "
+            eksctl delete cluster --name << parameters.cluster-name >>
