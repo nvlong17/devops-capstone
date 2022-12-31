@@ -136,13 +136,17 @@ workflows:
           requires:
             - make-image
       - deploy:
+          name: deploy-blue
           requires: [aws-ecr/build-and-push-image]
+          env-name: "blue"
       - request-testing:
           type: approval
           requires:
-            - deploy
+            - deploy-blue
       - deploy:
+          name: deploy-green
           requires: [request-testing]
+          env-name: "green"
 
 commands:
   destroy-environment:
