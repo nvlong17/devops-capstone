@@ -67,7 +67,7 @@ workflows:
           requires: [test-app]
       - aws-ecr/build-and-push-image:
           region: ${AWS_DEFAULT_REGION}
-          repo: udacity-capstone
-          tag: ${CIRCLE_SHA1}
+          repo: nvlong17
+          tag: udacity-capstone
           requires:
             - make-image
