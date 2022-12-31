@@ -90,8 +90,8 @@ jobs:
       - run:
           name: Install eksctl
           command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar -xvf -C .
+            sudo mv ./eksctl /usr/local/bin
             eksctl --version
       - run:
           name: Configure private AWS ECR
