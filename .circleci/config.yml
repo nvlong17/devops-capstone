@@ -101,8 +101,6 @@ jobs:
             kubectl apply -f k8s/longnv43-capstone.yml
             kubectl get deploy,rs,svc,pods
             kubectl rollout status deployment/longnv43-capstone
-            echo "Get service status:"
-            kubectl get services longnv43-capstone-service
 
 workflows:
   default:

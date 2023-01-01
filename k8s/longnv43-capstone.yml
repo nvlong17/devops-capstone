@@ -11,6 +11,11 @@ spec:
     matchLabels:
       app: longnv43-capstone
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
   template:
     metadata:
       labels:
@@ -35,4 +40,4 @@ spec:
   - name: http
     protocol: TCP
     port: 80
-    targetPort: 8000
+    targetPort: 8080
