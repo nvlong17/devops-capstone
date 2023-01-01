@@ -33,7 +33,6 @@ Pipeline steps:
     - AWS_DEFAULT_REGION
     - AWS_ECR_REGISTRY_ID
     - ECR_REPO_NAME
-    - ECR_IMAGE_TAG
 
 ### Step 3: Pick AWS Kubernetes as a Service, or build your own Kubernetes cluster.
     Use Ansible or CloudFormation to build your “infrastructure”; i.e., the Kubernetes Cluster.
@@ -57,6 +56,14 @@ eksctl create cluster \
     --zones ap-southeast-1b \
     --zones ap-southeast-1c
 ```
+#### EKS Cluster
+![eks-cluster](screenshot/eks-cluster.png)
+
+#### CloudFormation stacks for EKS
+![cf-stack](screenshot/cf-stack.png)
+
+#### EC2 Instance for EKS node
+![ec2](screenshot/ec2.png)
 
 ### Step 4: Build your pipeline
     Construct your pipeline in your GitHub repository.
@@ -71,12 +78,25 @@ eksctl create cluster \
 - [x] Include your Dockerfile/source code in the Git repository.
 - [x] Include with your Linting step both a failed Linting screenshot and a successful Linting screenshot to show the Linter working properly.
 
+#### Linting
 Failed lint
 ![lint failed](screenshot/lint_fail.png)
 Passed lint
-![lint failed](screenshot/lint_pass.png)
+![lint passed](screenshot/lint_pass.png)
 
 ### Step 5: Test your pipeline
     Perform builds on your pipeline.
     Verify that your pipeline works as you designed it.
     Take a screenshot of the Circle CI or Jenkins pipeline showing deployment, and a screenshot of your AWS EC2 page showing the newly created (for blue/green) or modified (for rolling) instances. Make sure you name your instances differently between blue and green deployments.
+
+#### Container image repository
+![ecr](screenshot/ecr.png)
+
+#### Pipeline builds
+![pipeline](screenshot/pipeline.png)
+
+#### Deployments to Kubernetes cluster
+Initial deployment
+![Initial deployment](screenshot/initial_deploy.png)
+Updated deployment
+![Updated deployment](screenshot/Updated_deploy.png)

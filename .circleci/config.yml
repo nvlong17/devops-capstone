@@ -100,6 +100,7 @@ jobs:
             # ls -la
             kubectl apply -f k8s/longnv43-capstone.yml
             kubectl get deploy,rs,svc,pods
+            kubectl rollout restart deployment/longnv43-capstone
             kubectl rollout status deployment/longnv43-capstone
 
 workflows:
