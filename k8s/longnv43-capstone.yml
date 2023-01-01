@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: longnv43-capstone
-        image: 156705469633.dkr.ecr.ap-southeast-1.amazonaws.com/nvlong17:udacity-capstone
+        image: 156705469633.dkr.ecr.ap-southeast-1.amazonaws.com/udacity-capstone:latest
         imagePullPolicy: "Always"
         ports:
         - containerPort: 80
