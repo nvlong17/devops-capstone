@@ -8,7 +8,8 @@ LOG.setLevel(logging.INFO)
 
 @app.route("/")
 def home():
-    html = f"<h3>LongNV43 DevOps Capstone Home</h3>"
+    html = f"""<h3>LongNV43 DevOps Capstone Home</h3>
+    <p>Update this page to include meaningful information</p>"""
     return html.format(format)
 
 @app.route("/secret", methods=['GET'])
