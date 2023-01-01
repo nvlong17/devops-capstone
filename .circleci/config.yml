@@ -96,6 +96,7 @@ jobs:
           command: |
             echo "Kubernetes nodes:"
             kubectl get nodes
+            ls -la
             kubectl apply -f k8s/longnv43-capstone.yml
             kubectl get deploy,rs,svc,pods
             kubectl rollout status deployment/longnv43-capstone
