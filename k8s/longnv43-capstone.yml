@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: longnv43-capstone
+  labels:
+    app: longnv43-capstone
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: longnv43-capstone
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: longnv43-capstone
+    spec:
+      containers:
+      - name: longnv43-capstone
+        image: 156705469633.dkr.ecr.ap-southeast-1.amazonaws.com/nvlong17:udacity-capstone
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: longnv43-capstone-service
+spec:
+  selector:
+    app: longnv43-capstone
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8000

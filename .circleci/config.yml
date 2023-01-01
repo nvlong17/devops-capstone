@@ -2,21 +2,6 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@8.2.1
-  aws-ecs: circleci/aws-ecs@3.2.0 
-
-parameters:
-  green-k8s-cluster-name:
-    type: string
-    default: "longnv43-capstone"
-  blue-k8s-cluster-name:
-    type: string
-    default: "longnv43-capstone-blue"
-  blue-k8s-pod-name:
-    type: string
-    default: longnv43-capstone-7b78f46ff7-k9mrc
-  green-k8s-pod-name:
-    type: string
-    default: longnv43-capstone-7b78f46ff7-8jmjx
 
 jobs:
   test-app:
@@ -74,10 +59,6 @@ jobs:
             ./run_docker.sh
 
   deploy:
-    parameters:
-      env-name:
-        type: string
-        default: "blue"
     docker:
       - image: amazon/aws-cli
 
@@ -107,27 +88,16 @@ jobs:
       - run:
           name: Get k8s cluster
           command: |
-            if [[ << parameters.env-name >> == 'green' ]]; then
-              aws eks update-kubeconfig \
-              --region ${AWS_DEFAULT_REGION} \
-              --name << pipeline.parameters.green-k8s-cluster-name >>
-            else
-              aws eks update-kubeconfig \
-              --region ${AWS_DEFAULT_REGION} \
-              --name << pipeline.parameters.blue-k8s-cluster-name >>
-            fi
+            aws eks update-kubeconfig \
+            --region ${AWS_DEFAULT_REGION} \
+            --name longnv43-capstone
       - run:
           name: Deploy application to EKS cluster
           command: |
             echo "Kubernetes nodes:"
             kubectl get nodes
-            kubectl set image deployment/longnv43-capstone nvlong17=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nvlong17:udacity-capstone
+            kubectl apply -f k8s/longnv43-capstone.yml
             kubectl get deploy,rs,svc,pods
-            if [[ << parameters.env-name >> == 'green' ]]; then
-              kubectl port-forward << pipeline.parameters.green-k8s-pod-name >> 8000:80
-            else
-              kubectl port-forward << pipeline.parameters.blue-k8s-pod-name >> 8000:80
-            fi
             kubectl rollout status deployment/longnv43-capstone
 
 workflows:
@@ -137,39 +107,11 @@ workflows:
       - make-image:
           requires: [test-app]
       - aws-ecr/build-and-push-image:
+          name: "push-image-to-ecr"
           region: ${AWS_DEFAULT_REGION}
           repo: ${ECR_REPO_NAME}
           tag: ${ECR_IMAGE_TAG}
           requires:
             - make-image
       - deploy:
-          name: deploy-blue
-          requires: [aws-ecr/build-and-push-image]
-          env-name: "blue"
-      - request-testing:
-          type: approval
-          requires:
-            - deploy-blue
-      - deploy:
-          name: deploy-green
-          requires: [request-testing]
-          env-name: "green"
-
-commands:
-  destroy-environment:
-    description: Destroy environment with given name
-    parameters:
-      env-name:
-        type: string
-    steps:
-      - run:
-          name: Destroy environments
-          when: on_fail
-          command: |
-            if [[ << parameters.env-name >> == 'green' ]]; then
-              echo "Destroying EKS cluster: << pipeline.parameters.green-k8s-cluster-name >> "
-              eksctl delete cluster --name << pipeline.parameters.green-k8s-cluster-name >>
-            else
-              echo "Destroying EKS cluster: << pipeline.parameters.blue-k8s-cluster-name >> "
-              eksctl delete cluster --name << pipeline.parameters.blue-k8s-cluster-name >>
-            fi
+          requires: [push-image-to-ecr]

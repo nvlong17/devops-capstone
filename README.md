@@ -10,7 +10,7 @@
     For the Docker application you can either use an application which you come up with, or use an open-source application pulled from the Internet, or if you have no idea, you can use an Nginx “Hello World, my name is (student name)” application.
 
 - [x] Docker application: Flask app at `app.py`
-- [x] Blue/Green Deployment type
+- [x] Rolling Deployment type
 - [x] Continuous Integration using Circle CI
 - [x] Plan what the pipeline will look like
 
@@ -42,7 +42,7 @@ Pipeline steps:
 
 - [x] Use AWS Elastic Kubernetes Service (EKS) for provisioning a Kubernetes cluster.
 
-Used `eksctl` with the following command to deploy 2 EKS clusters (replace `--name` for green/blue deployment):
+Used `eksctl` with the following command to deploy an EKS cluster:
 ```
 eksctl create cluster \
     --name longnv43-capstone \
